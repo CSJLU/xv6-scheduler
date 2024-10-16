@@ -7,6 +7,8 @@
 #include "mmu.h"
 #include "proc.h"
 
+extern int forkwinner = 0;
+
 int
 sys_fork(void)
 {
@@ -110,5 +112,13 @@ int sys_enable_sched_trace(void)
   
   sched_trace_counter = 0;
 
+  return 0;
+}
+
+int sys_fork_winner(void) {
+  if (argint(0, &forkwinner) < 0) {
+    return -1;
+  }
+  
   return 0;
 }

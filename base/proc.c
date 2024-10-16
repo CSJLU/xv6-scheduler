@@ -7,6 +7,8 @@
 #include "proc.h"
 #include "spinlock.h"
 
+extern int forkwinner;
+
 struct {
   struct spinlock lock;
   struct proc proc[NPROC];
@@ -218,6 +220,9 @@ fork(void)
   np->state = RUNNABLE;
   release(&ptable.lock);
 
+  if (forkwinner == 1) {
+    yield();
+  }
   return pid;
 }
 
