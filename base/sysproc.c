@@ -126,3 +126,11 @@ int sys_fork_winner(void) {
 int sys_set_sched(void) {
   return 0;
 }
+
+int sys_tickets_owned(void) {
+  return 0;
+}
+
+int sys_transfer_tickets(void) {
+  return 0;
+}
