@@ -122,3 +122,7 @@ int sys_fork_winner(void) {
   
   return 0;
 }
+
+int sys_set_sched(void) {
+  return 0;
+}
