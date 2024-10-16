@@ -12,9 +12,9 @@ int main(int argc, char * argv[])
     set_sched(i);
     
     if(i == 0){
-        printf(1, "Selecting parent first\n");
+        printf(1, "Selecting round robin\n");
     } else if(i == 1){
-        printf(1, "Selecting child first\n");
+        printf(1, "Selecting stride scheduler\n");
     }
 
     exit(); //return 0;

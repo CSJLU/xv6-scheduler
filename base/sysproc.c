@@ -8,6 +8,7 @@
 #include "proc.h"
 
 extern int forkwinner = 0;
+extern int schedulestate = 0;
 
 int
 sys_fork(void)
@@ -124,13 +125,20 @@ int sys_fork_winner(void) {
 }
 
 int sys_set_sched(void) {
+  if (argint(0, &schedulestate) < 0) {
+    return -1;
+  }
   return 0;
 }
 
 int sys_tickets_owned(void) {
-  return 0;
+  return proc->tickets;
 }
 
 int sys_transfer_tickets(void) {
+  int pid;
+  int tickets;
+  argint(0, &pid);
+  argint(1, &tickets);
   return 0;
 }

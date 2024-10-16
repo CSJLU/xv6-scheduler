@@ -8,6 +8,7 @@
 #include "spinlock.h"
 
 extern int forkwinner;
+extern int schedulestate;
 
 struct {
   struct spinlock lock;
@@ -17,6 +18,7 @@ struct {
 static struct proc *initproc;
 
 int nextpid = 1;
+int STRIDE_TOTAL_TICKETS = 100;
 int sched_trace_enabled = 0; // ZYF: for OS CPU/process project
 int sched_trace_counter = 0; // ZYF: counter for print formatting
 extern void forkret(void);
@@ -220,6 +222,29 @@ fork(void)
   np->state = RUNNABLE;
   release(&ptable.lock);
 
+  acquire(&ptable.lock);
+  int runnableprocesses;
+  for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+    if (p->state == RUNNABLE || p->state == RUNNING) {
+      runnableprocesses++;
+    }
+  }
+  for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+    if (p->state == RUNNABLE || p->state == RUNNING) {
+      p->tickets = (STRIDE_TOTAL_TICKETS/runnableprocesses);
+      p->pass = 0;
+      if (p->tickets != 0) {
+	p->strides = (STRIDE_TOTAL_TICKETS/p->tickets);
+      }
+    }
+    else {
+      p->tickets = 0;
+      p->strides = 0;
+    }
+  }
+  release(&ptable.lock);
+  
+
   if (forkwinner == 1) {
     yield();
   }
@@ -268,6 +293,28 @@ exit(void)
 
   // Jump into the scheduler, never to return.
   curproc->state = ZOMBIE;
+
+  int runnableprocesses;
+  for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+    if (p->state == RUNNABLE || p->state == RUNNING) {
+      runnableprocesses++;
+    }
+  }
+  for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+    if (p->state == RUNNABLE || p->state == RUNNING) {
+      p->tickets = (STRIDE_TOTAL_TICKETS/runnableprocesses);
+      p->pass = 0;
+      if (p->tickets != 0) {
+	p->strides = (STRIDE_TOTAL_TICKETS/p->tickets);
+      }
+    }
+    else {
+      p->tickets = 0;
+      p->strides = 0;
+      p->pass = 0;
+    }
+  }
+  
   sched();
   panic("zombie exit");
 }
