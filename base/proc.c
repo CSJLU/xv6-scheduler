@@ -223,6 +223,7 @@ fork(void)
   release(&ptable.lock);
 
   acquire(&ptable.lock);
+  struct proc *p;
   int runnableprocesses;
   for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
     if (p->state == RUNNABLE || p->state == RUNNING) {
@@ -293,7 +294,7 @@ exit(void)
 
   // Jump into the scheduler, never to return.
   curproc->state = ZOMBIE;
-
+  struct proc *p;
   int runnableprocesses;
   for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
     if (p->state == RUNNABLE || p->state == RUNNING) {
@@ -606,4 +607,27 @@ procdump(void)
     }
     cprintf("\n");
   }
+}
+
+int transfer_manager(int pid, int tickets, struct proc *caller) {
+  if (tickets < 0) {
+    return -1;
+  }
+  if (tickets > (caller->tickers - 1)) {
+    return -2;
+  }
+  struct proc *p;
+  acquire(&ptable.lock);
+  for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+    if (p->pid == pid) {
+      p->tickets += tickets;
+      caller->tickers -= tickets;
+      p->strides = (STRIDE_TOTAL_TICKETS/p->tickets);
+      caller->strides = (STRIDE_TOTAL_TICKETS/caller->tickets);
+      release(&ptable.lock);
+      return caller->tickets;
+    }
+  }
+  release(&ptable.lock);
+  return -3;
 }

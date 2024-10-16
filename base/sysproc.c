@@ -140,5 +140,5 @@ int sys_transfer_tickets(void) {
   int tickets;
   argint(0, &pid);
   argint(1, &tickets);
-  return 0;
+  return transfer_tickets(pid, tickets, proc);
 }
