@@ -55,6 +55,8 @@ struct proc {
 };
 
 extern int transfer_manager(int pid, int tickets, struct proc *caller);
+extern struct cpu *cpi asm("%gs:0");
+extern struct proc *proc asm("%gs:4");
 
 // Process memory is laid out contiguously, low addresses first:
 //   text
