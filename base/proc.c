@@ -387,8 +387,8 @@ scheduler(void)
 
         // Loop over process table looking for process to run.
         acquire(&ptable.lock);
-        ran = 0;
-	int minPass;
+        /* ran = 0; */
+	/* int minPass; */
 
 
 	//Stride scheduler
@@ -426,22 +426,21 @@ scheduler(void)
 	   if(p->state != RUNNABLE) {
 	     continue;
 	   }
-	 }
-	 ran = 1;
+	   ran = 1;
+	   // Switch to chosen process.  It is the process's job
+	   // to release ptable.lock and then reacquire it
+	   // before jumping back to us.
+	   c->proc = p;
+	   switchuvm(p);
+	   p->state = RUNNING;
+	   swtch(&(c->scheduler), p->context);
+	   switchkvm();
 	 
-         // Switch to chosen process.  It is the process's job
-         // to release ptable.lock and then reacquire it
-         // before jumping back to us.
-         c->proc = p;
-         switchuvm(p);
-         p->state = RUNNING;
-         swtch(&(c->scheduler), p->context);
-         switchkvm();
-	 
-	 // Process is done running for now.
-	 // It should have changed its p->state before coming back.
+	   // Process is done running for now.
+	   // It should have changed its p->state before coming back.
 	 c->proc = 0;
-       
+	 }
+
     /* } */
     release(&ptable.lock);
 
