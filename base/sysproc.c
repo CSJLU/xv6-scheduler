@@ -132,7 +132,7 @@ int sys_set_sched(void) {
 }
 
 int sys_tickets_owned(void) {
-  return proc->tickets;
+  return myproc()->tickets;
 }
 
 int sys_transfer_tickets(void) {
@@ -140,5 +140,5 @@ int sys_transfer_tickets(void) {
   int tickets;
   argint(0, &pid);
   argint(1, &tickets);
-  return transfer_tickets(pid, tickets, proc);
+  return transfer_manager(pid, tickets, myproc());
 }

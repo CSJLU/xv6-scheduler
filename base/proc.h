@@ -54,6 +54,8 @@ struct proc {
   int pass;
 };
 
+extern int transfer_manager(int pid, int tickets, struct proc *caller);
+
 // Process memory is laid out contiguously, low addresses first:
 //   text
 //   original data and bss

@@ -235,12 +235,12 @@ fork(void)
       p->tickets = (STRIDE_TOTAL_TICKETS/runnableprocesses);
       p->pass = 0;
       if (p->tickets != 0) {
-	p->strides = (STRIDE_TOTAL_TICKETS/p->tickets);
+	p->stride = (STRIDE_TOTAL_TICKETS/p->tickets);
       }
     }
     else {
       p->tickets = 0;
-      p->strides = 0;
+      p->stride = 0;
     }
   }
   release(&ptable.lock);
@@ -294,7 +294,6 @@ exit(void)
 
   // Jump into the scheduler, never to return.
   curproc->state = ZOMBIE;
-  struct proc *p;
   int runnableprocesses;
   for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
     if (p->state == RUNNABLE || p->state == RUNNING) {
@@ -306,12 +305,12 @@ exit(void)
       p->tickets = (STRIDE_TOTAL_TICKETS/runnableprocesses);
       p->pass = 0;
       if (p->tickets != 0) {
-	p->strides = (STRIDE_TOTAL_TICKETS/p->tickets);
+	p->stride = (STRIDE_TOTAL_TICKETS/p->tickets);
       }
     }
     else {
       p->tickets = 0;
-      p->strides = 0;
+      p->stride = 0;
       p->pass = 0;
     }
   }
@@ -390,39 +389,38 @@ scheduler(void)
         acquire(&ptable.lock);
         ran = 0;
 	int minPass;
-	int minProcess;
 
 
 	//Stride scheduler
 	//if var of set_sched = 1:
-	if(schedulestate == 1) {
-	  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-	    if(p->state != RUNNABLE) {
-	      continue;
-	    }
-	    if(p->pass < minPass) {
-	      minProcess = p;
-	      minPass = p->pass;
-	    }
-	  }
+       /* 	if(schedulestate == 1) { */
+       /* 	  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) { */
+       /* 	    if(p->state != RUNNABLE) { */
+       /* 	      continue; */
+       /* 	    } */
+       /* 	    if(p->pass < minPass) { */
+       /* 	      minProcess = p; */
+       /* 	      minPass = p->pass; */
+       /* 	    } */
+       /* 	  } */
 
-	  //Changes process to the minimum process
-	    p = minProcess;
-	    p->pass = = p->pass + p->strides;
-	    ran = 1;
+       /* 	  //Changes process to the minimum process */
+       /* 	    p = minProcess; */
+       /* 	    p->pass = p->pass + p->stride; */
+       /* 	    ran = 1; */
 
-	  //Switching process
-	    proc = 1;
-	    switchuvm(p);
-	    p->state = RUNNING;
-	    swtch(&cpu->scheduler, proc->context);
-	    switchkvm();
+       /* 	  //Switching process */
+       /* 	    c->proc = 1; */
+       /* 	    switchuvm(p); */
+       /* 	    p->state = RUNNING; */
+       /* 	    swtch(&c->scheduler, c->proc->context); */
+       /* 	    switchkvm(); */
 
 	  
-	  proc = 0;
-       }
+       /* 	  c->proc = 0; */
+       /* } */
 
-       else {
+       /* else { */
 	 ran = 0;
 	 for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
 	   if(p->state != RUNNABLE) {
@@ -443,8 +441,8 @@ scheduler(void)
 	 // Process is done running for now.
 	 // It should have changed its p->state before coming back.
 	 c->proc = 0;
-       }
-    }
+       
+    /* } */
     release(&ptable.lock);
 
     if (ran == 0){
@@ -650,7 +648,7 @@ int transfer_manager(int pid, int tickets, struct proc *caller) {
   if (tickets < 0) {
     return -1;
   }
-  if (tickets > (caller->tickers - 1)) {
+  if (tickets > (caller->tickets - 1)) {
     return -2;
   }
   struct proc *p;
@@ -658,9 +656,9 @@ int transfer_manager(int pid, int tickets, struct proc *caller) {
   for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
     if (p->pid == pid) {
       p->tickets += tickets;
-      caller->tickers -= tickets;
-      p->strides = (STRIDE_TOTAL_TICKETS/p->tickets);
-      caller->strides = (STRIDE_TOTAL_TICKETS/caller->tickets);
+      caller->tickets -= tickets;
+      p->stride = (STRIDE_TOTAL_TICKETS/p->tickets);
+      caller->stride = (STRIDE_TOTAL_TICKETS/caller->tickets);
       release(&ptable.lock);
       return caller->tickets;
     }
