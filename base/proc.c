@@ -377,75 +377,66 @@ scheduler(void)
   struct proc *p;
   struct proc *minProcess;
   struct cpu *c = mycpu();
-  c->proc = 0;
   
   int ran = 0; // CS 350/550: to solve the 100%-CPU-utilization-when-idling problem
 
-  for(;;){
+  for(;;) {
     // Enable interrupts on this processor.
     sti();
+    acquire(&ptable.lock);
+    if(schedulestate == 1) {
+      int minPass = 10000;
+      ran = 0;
+      for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) { 
+        if(p->state != RUNNABLE) { 
+          continue; 
+        } 
+        if(p->pass < minPass) {
+          minProcess = p; 
+          minPass = p->pass; 
+        } 
+      }
 
-        // Loop over process table looking for process to run.
-        acquire(&ptable.lock);
-        /* ran = 0; */
-	/* int minPass; */
+      //Changes process to the minimum process
+      if(minProcess != 0) {
+        p = minProcess;
+        p->pass = p->pass + p->stride;
+        ran = 1;
 
+        //Switching process
+        c->proc = p;
+        switchuvm(p); 
+        p->state = RUNNING;
+        swtch(&(c->scheduler), p->context);
+        switchkvm();
+        c->proc = 0;
+      }
+    }
+    else {
+      ran = 0;
+      for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+        if(p->state != RUNNABLE) {
+          continue;
+        }
 
-	//Stride scheduler
-	//if var of set_sched = 1:
-       /* 	if(schedulestate == 1) { */
-       /* 	  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) { */
-       /* 	    if(p->state != RUNNABLE) { */
-       /* 	      continue; */
-       /* 	    } */
-       /* 	    if(p->pass < minPass) { */
-       /* 	      minProcess = p; */
-       /* 	      minPass = p->pass; */
-       /* 	    } */
-       /* 	  } */
-
-       /* 	  //Changes process to the minimum process */
-       /* 	    p = minProcess; */
-       /* 	    p->pass = p->pass + p->stride; */
-       /* 	    ran = 1; */
-
-       /* 	  //Switching process */
-       /* 	    c->proc = 1; */
-       /* 	    switchuvm(p); */
-       /* 	    p->state = RUNNING; */
-       /* 	    swtch(&c->scheduler, c->proc->context); */
-       /* 	    switchkvm(); */
-
-	  
-       /* 	  c->proc = 0; */
-       /* } */
-
-       /* else { */
-	 ran = 0;
-	 for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-	   if(p->state != RUNNABLE) {
-	     continue;
-	   }
-	   ran = 1;
-	   // Switch to chosen process.  It is the process's job
-	   // to release ptable.lock and then reacquire it
-	   // before jumping back to us.
-	   c->proc = p;
-	   switchuvm(p);
-	   p->state = RUNNING;
-	   swtch(&(c->scheduler), p->context);
-	   switchkvm();
-	 
-	   // Process is done running for now.
-	   // It should have changed its p->state before coming back.
-	 c->proc = 0;
-	 }
-
-    /* } */
+        ran = 1;
+        // Switch to chosen process.  It is the process's job
+        // to release ptable.lock and then reacquire it
+        // before jumping back to us.
+        c->proc = p;
+        switchuvm(p);
+        p->state = RUNNING;
+        swtch(&(c->scheduler), p->context);
+        switchkvm();
+    
+        // Process is done running for now.
+        // It should have changed its p->state before coming back.
+        c->proc = 0;
+      }
+	  }
     release(&ptable.lock);
-
     if (ran == 0){
-        halt();
+      halt();
     }
   }
 }
