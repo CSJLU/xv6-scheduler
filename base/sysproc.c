@@ -124,9 +124,18 @@ int sys_fork_winner(void) {
   return 0;
 }
 
+/*
 int sys_set_sched(void) {
   if (argint(0, &schedulestate) < 0) {
     return -1;
+  }
+  return 0;
+}
+*/
+
+int sys_set_sched(void) {
+  if (argint(0, &schedulestate) < 0) {
+    schedulestate = 1;
   }
   return 0;
 }
