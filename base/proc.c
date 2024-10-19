@@ -223,24 +223,24 @@ fork(void)
   release(&ptable.lock);
 
   acquire(&ptable.lock);
-  struct proc *p;
-  int runnableprocesses;
-  for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-    if (p->state == RUNNABLE || p->state == RUNNING) {
+  //struct proc *p;
+  int runnableprocesses = 0;
+  for (curproc = ptable.proc; curproc < &ptable.proc[NPROC]; curproc++) {
+    if (curproc->state == RUNNABLE || curproc->state == RUNNING) {
       runnableprocesses++;
     }
   }
-  for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-    if (p->state == RUNNABLE || p->state == RUNNING) {
-      p->tickets = (STRIDE_TOTAL_TICKETS/runnableprocesses);
-      p->pass = 0;
-      if (p->tickets != 0) {
-	p->stride = (STRIDE_TOTAL_TICKETS/p->tickets);
+  for (curproc = ptable.proc; curproc < &ptable.proc[NPROC]; curproc++) {
+    if (curproc->state == RUNNABLE || curproc->state == RUNNING) {
+      curproc->tickets = (STRIDE_TOTAL_TICKETS/runnableprocesses);
+      if (curproc->tickets != 0) {
+	      curproc->stride = (STRIDE_TOTAL_TICKETS/curproc->tickets);
+        curproc->pass = 0;
       }
     }
     else {
-      p->tickets = 0;
-      p->stride = 0;
+      curproc->tickets = 0;
+      curproc->stride = 0;
     }
   }
   release(&ptable.lock);
@@ -294,24 +294,25 @@ exit(void)
 
   // Jump into the scheduler, never to return.
   curproc->state = ZOMBIE;
-  int runnableprocesses;
-  for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-    if (p->state == RUNNABLE || p->state == RUNNING) {
+  int runnableprocesses = 0;
+  struct proc *z;
+  for (z = ptable.proc; z < &ptable.proc[NPROC]; z++) {
+    if (z->state == RUNNABLE || z->state == RUNNING) {
       runnableprocesses++;
     }
   }
-  for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-    if (p->state == RUNNABLE || p->state == RUNNING) {
-      p->tickets = (STRIDE_TOTAL_TICKETS/runnableprocesses);
-      p->pass = 0;
-      if (p->tickets != 0) {
-	p->stride = (STRIDE_TOTAL_TICKETS/p->tickets);
+  for (z = ptable.proc; z < &ptable.proc[NPROC]; z++) {
+    if (z->state == RUNNABLE || z->state == RUNNING) {
+      z->tickets = (STRIDE_TOTAL_TICKETS/runnableprocesses);
+      if (z->tickets != 0) {
+	      z->stride = (STRIDE_TOTAL_TICKETS/p->tickets);
+        z->pass = 0;
       }
     }
     else {
-      p->tickets = 0;
-      p->stride = 0;
-      p->pass = 0;
+      z->tickets = 0;
+      z->stride = 0;
+      z->pass = 0;
     }
   }
   
@@ -385,16 +386,22 @@ scheduler(void)
     sti();
     acquire(&ptable.lock);
     if(schedulestate == 1) {
-      int minPass = 10000;
+      int minPass = 2000;
       ran = 0;
       for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) { 
         if(p->state != RUNNABLE) { 
           continue; 
         } 
         if(p->pass < minPass) {
-          minProcess = p; 
           minPass = p->pass; 
+          minProcess = p; 
         } 
+      }
+
+      if(minPass >= 2000) {
+        for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+          p->pass = 0;
+        }
       }
 
       //Changes process to the minimum process
