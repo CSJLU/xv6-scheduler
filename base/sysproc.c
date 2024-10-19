@@ -133,6 +133,9 @@ int sys_set_sched(void) {
 }
 */
 
+
+//testing to see if scheduler not being set properly
+//also commented out code in set_sched.c since i dont think its needed
 int sys_set_sched(void) {
   if (argint(0, &schedulestate) < 0) {
     schedulestate = 1;
