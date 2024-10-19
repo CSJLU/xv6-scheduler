@@ -144,6 +144,7 @@ int sys_set_sched(void) {
   return 0;
 }
 
+//Calls user level get_tickets_owned function which takes process pid as argument
 int sys_tickets_owned(void) {
   int id;
   if(argint(0, &id) < 0) {
