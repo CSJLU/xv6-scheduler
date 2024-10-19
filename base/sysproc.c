@@ -7,8 +7,8 @@
 #include "mmu.h"
 #include "proc.h"
 
-extern int forkwinner = 0;
-extern int schedulestate = 0;
+int forkwinner = 0;
+int schedulestate = 0;
 
 int
 sys_fork(void)
@@ -138,14 +138,20 @@ int sys_set_sched(void) {
 //also commented out code in set_sched.c since i dont think its needed
 int sys_set_sched(void) {
   if (argint(0, &schedulestate) < 0) {
-    schedulestate = 1;
+    return -1;
   }
+  schedulestate = 1;
   return 0;
 }
 
 int sys_tickets_owned(void) {
-  return proc->tickets;
+  int id;
+  if(argint(0, &id) < 0) {
+    return -1;
+  }
+  return get_tickets_owned(id);
 }
+
 
 int sys_transfer_tickets(void) {
   int pid;
