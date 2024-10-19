@@ -55,6 +55,7 @@ struct proc {
 };
 
 extern int transfer_manager(int pid, int tickets, struct proc *caller);
+extern int get_tickets_owned(int pid);
 extern struct cpu *cpi asm("%gs:0");
 extern struct proc *proc asm("%gs:4");
 
@@ -63,3 +64,6 @@ extern struct proc *proc asm("%gs:4");
 //   original data and bss
 //   fixed-size stack
 //   expandable heap
+
+extern int forkwinner;
+extern int schedulestate;

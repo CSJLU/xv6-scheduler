@@ -663,3 +663,20 @@ int transfer_manager(int pid, int tickets, struct proc *caller) {
   release(&ptable.lock);
   return -3;
 }
+
+
+int get_tickets_owned(int pid) {
+  struct proc *p;
+  acquire(&ptable.lock);
+
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+    if(p->pid == pid) {
+      release(&ptable.lock);
+      return p->tickets;
+    }
+  }
+  release(&ptable.lock);
+  return -1;
+}
+
+
