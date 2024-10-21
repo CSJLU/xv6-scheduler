@@ -56,8 +56,6 @@ struct proc {
 
 extern int transfer_handler(int pid, int tickets, struct proc *caller);
 extern int get_tickets_owned(int pid);
-/* extern struct cpu *cpu asm("%gs:0"); */
-/* extern struct proc *proc asm("%gs:4"); */
 extern struct proc* myproc(void);
 
 // Process memory is laid out contiguously, low addresses first:
