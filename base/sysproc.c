@@ -159,5 +159,11 @@ int sys_transfer_tickets(void) {
   int tickets;
   argint(0, &pid);
   argint(1, &tickets);
-  return transfer_manager(pid, tickets, proc);
+  if (tickets < 0) {
+    return -1;
+  }
+  else if (tickets > (myproc()->tickets - 1)) {
+    return -2;
+  }
+  return transfer_handler(pid, tickets, myproc());
 }

@@ -234,7 +234,7 @@ fork(void)
     if (curproc->state == RUNNABLE || curproc->state == RUNNING) {
       curproc->tickets = (STRIDE_TOTAL_TICKETS/runnableprocesses);
       if (curproc->tickets != 0) {
-	      curproc->stride = (STRIDE_TOTAL_TICKETS/curproc->tickets);
+	curproc->stride = (STRIDE_TOTAL_TICKETS/curproc->tickets);
         curproc->pass = 0;
       }
     }
@@ -641,13 +641,7 @@ procdump(void)
   }
 }
 
-int transfer_manager(int pid, int tickets, struct proc *caller) {
-  if (tickets < 0) {
-    return -1;
-  }
-  if (tickets > (caller->tickets - 1)) {
-    return -2;
-  }
+int transfer_handler(int pid, int tickets, struct proc *caller) {
   struct proc *p;
   acquire(&ptable.lock);
   for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {

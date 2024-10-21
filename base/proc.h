@@ -54,10 +54,11 @@ struct proc {
   int pass;
 };
 
-extern int transfer_manager(int pid, int tickets, struct proc *caller);
+extern int transfer_handler(int pid, int tickets, struct proc *caller);
 extern int get_tickets_owned(int pid);
-extern struct cpu *cpi asm("%gs:0");
-extern struct proc *proc asm("%gs:4");
+/* extern struct cpu *cpu asm("%gs:0"); */
+/* extern struct proc *proc asm("%gs:4"); */
+extern struct proc* myproc(void);
 
 // Process memory is laid out contiguously, low addresses first:
 //   text
@@ -65,5 +66,4 @@ extern struct proc *proc asm("%gs:4");
 //   fixed-size stack
 //   expandable heap
 
-extern int forkwinner;
-extern int schedulestate;
+
