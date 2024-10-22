@@ -33,5 +33,10 @@ Created the helper function transfer_manager() for transfer_tickets() within pro
 Answered question 2 and question 3 of the QnA portion in full.
 Helped debug many different issues.
 
+Manika: Helped work on and implement stride scheduling policy function. Helped implement tickets_owned() as well as transfer_tickets() and set_sched() system calls (all worked together). 
+Assisted with debugging issues in stride scheduler function.
+Answered Q1 in full and part of Q2. 
+
 Nick: Helped implement stride scheduler function. Aided with the get_tickets_owned function. Assited in debuging issues in stride scheduler and child-first race conditon. 
 Contributed to answering questions. 
+
