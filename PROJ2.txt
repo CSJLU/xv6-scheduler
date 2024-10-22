@@ -8,4 +8,4 @@ Code is added to fork() which exists in proc.c. The code calls yield if forkwinn
 
 
 
-# Stride scheduling
+# Stride scheduling policy
