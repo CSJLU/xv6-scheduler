@@ -3,9 +3,22 @@
 Create fork_winner system call to set child first/parent first
 To do so, system call is made (files involved: user.h, syscall.h, usys.S, sysproc.c, syscall.c, proc.h)
 Global variable named forkwinner is declared in proc.c and externed in proc.h so that forkwinner in proc.c can be modified by function in another file
-fork_winner function that is defined in sysproc.c stores user argument of either 1 or 0 to forkwinner variable (0 = parent, 1 = child_first)
+fork_winner function that is defined in sysproc.c stores user argument of either 1 or 0 to forkwinner variable (0 = parent first, 1 = child first)
 Code is added to fork() which exists in proc.c. The code calls yield if forkwinner is equal to 1, essentially switching to the child-first policy. 
 
 
 
 # Stride scheduling policy
+
+
+
+// Contributions  
+Johnny: Worked on child-first race condition. Implemented stride scheduler function in proc.c. Code was written to find the process with the min pass value.  
+Schedule this process to be ran (context switch to min process's context which allows that process to be executed). 
+Created user level get_tickets_owned function which is called by tickets_owned system call, which effectively gets process ticket number based off pid argument. 
+Helped debug different issues.
+
+
+
+
+
