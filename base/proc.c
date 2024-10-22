@@ -386,7 +386,7 @@ scheduler(void)
     sti();
     acquire(&ptable.lock);
     if(schedulestate == 1) {
-      int minPass = 2000;
+      int minPass = 5000;
       ran = 0;
       for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) { 
         if(p->state != RUNNABLE) { 
@@ -398,7 +398,7 @@ scheduler(void)
         } 
       }
 
-      if(minPass >= 2000) {
+      if(minPass >= 5000) {
         for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
           p->pass = 0;
         }
