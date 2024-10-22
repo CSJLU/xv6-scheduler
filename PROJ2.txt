@@ -32,4 +32,6 @@ Evan: Worked on and implemented child-first race condition (with Johnny). Implem
 Created the helper function transfer_manager() for transfer_tickets() within proc.c. Added the mechanisms for updating ticket/stride/pass values in fork() and exit().
 Answered question 2 and question 3 of the QnA portion in full.
 Helped debug many different issues.
-  
+
+Nick: Helped implement stride scheduler function. Aided with the get_tickets_owned function. Assited in debuging issues in stride scheduler and child-first race conditon. 
+Contributed to answering questions. 
